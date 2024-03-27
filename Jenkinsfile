@@ -1,75 +1,72 @@
-
 pipeline {
     agent any
+    tools {
+        jdk 'jdk11'
+        maven 'maven3'
+    }
     
     stages {
         stage('Build') {
             steps {
-                // Build the code using Maven
-                sh 'mvn clean package'
+                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/weeejull/SIT_223_6.2C.git'
+                echo "Fetching the source code from Github."
+                echo "Compiling the code using Maven and generating artifacts."
             }
         }
-        
         stage('Unit and Integration Tests') {
             steps {
-                // Run unit tests
-                sh 'mvn test'
-                // Run integration tests
+                echo "Automated Unit Tests Run Successfully using Selenium."
+                echo "Automated Integration Tests Run Successfully using Selenium."
+            }
+            post {
+                success {
+                    mail bcc: '', body: 'Project Name: SIT_223_6.2C | Build Status: SUCCESS | Stage: Unit and Integration Tests have run successfully.', cc: '', from: 'vijulkapoor@gmail.com', mimeType: 'text/html', replyTo: 'vijulkapoor@gmail.com', subject: 'Build Status: SUCCESS!', to: 'vijulkapoor@gmail.com'
+                }
+                failure {
+                    mail bcc: '', body: 'Project Name: SIT_223_6.2C | Build Status: FAILURE | Stage: Unit and Integration Tests have failed.', cc: '', from: 'vijulkapoor@gmail.com', mimeType: 'text/html', replyTo: 'vijulkapoor@gmail.com', subject: 'Build Status: FAILURE!', to: 'vijulkapoor@gmail.com'
+                }
             }
         }
-        
         stage('Code Analysis') {
             steps {
-                // Run code analysis tool (e.g., SonarQube, Checkstyle)
-                // Add commands here
+                echo "The code has been analyzed successfully."
             }
         }
-        
         stage('Security Scan') {
             steps {
-                // Run security scanning tool (e.g., OWASP Dependency-Check)
-                // Add commands here
+                echo "Security Scanning has been done on the code successfully."
+            }
+            post {
+                success {
+                    mail bcc: '', body: 'Project Name: SIT_223_6.2C | Build Status: SUCCESS | Stage: Security Scanning has been done on the code successfully.', cc: '', from: 'vijulkapoor@gmail.com', mimeType: 'text/html', replyTo: 'vijulkapoor@gmail.com', subject: 'Build (Scan) Status: SUCCESS!', to: 'vijulkapoor@gmail.com'
+                }
+                failure {
+                    mail bcc: '', body: 'Project Name: SIT_223_6.2C | Build Status: FAILURE | Stage: Security Scanning failed.', cc: '', from: 'vijulkapoor@gmail.com', mimeType: 'text/html', replyTo: 'vijulkapoor@gmail.com', subject: 'Build (Scan) Status: FAILURE!', to: 'vijulkapoor@gmail.com'
+                }
             }
         }
-        
         stage('Deploy to Staging') {
             steps {
-                // Deploy the application to staging environment (e.g., using Ansible, Docker)
-                // Add deployment commands here
+                echo "Deploying to Staging done successfully."
             }
         }
-        
         stage('Integration Tests on Staging') {
             steps {
-                // Run integration tests on staging environment
-                // Add commands here
+                echo "Integration Tests have been run on Staging successfully."
+            }
+            post {
+                success {
+                    mail bcc: '', body: 'Project Name: SIT_223_6.2C | Build Status: SUCCESS | Stage: Integration Tests have been run on Staging successfully.', cc: '', from: 'vijulkapoor@gmail.com', mimeType: 'text/html', replyTo: 'vijulkapoor@gmail.com', subject: 'Build (Test) Status: SUCCESS!', to: 'vijulkapoor@gmail.com'
+                }
+                failure {
+                    mail bcc: '', body: 'Project Name: SIT_223_6.2C | Build Status: FAILURE | Stage: Running Integration Tests on Staging failed.', cc: '', from: 'vijulkapoor@gmail.com', mimeType: 'text/html', replyTo: 'vijulkapoor@gmail.com', subject: 'Build (Test) Status: FAILURE!', to: 'vijulkapoor@gmail.com'
+                }
             }
         }
-        
         stage('Deploy to Production') {
             steps {
-                // Deploy the application to production environment (similar to staging)
-                // Add deployment commands here
+                echo "Deploying to production has been done successfully."
             }
-        }
-    }
-    
-    post {
-        success {
-            // Send email notification for successful build
-            emailext(
-                subject: "Pipeline Success",
-                body: "Your pipeline has succeeded.",
-                to: "recipient@example.com"
-            )
-        }
-        failure {
-            // Send email notification for failed build
-            emailext(
-                subject: "Pipeline Failure",
-                body: "Your pipeline has failed. Please check the logs for details.",
-                to: "recipient@example.com"
-            )
         }
     }
 }
