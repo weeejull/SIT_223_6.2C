@@ -7,6 +7,7 @@ pipeline {
             steps {
                 echo "Fetching the source code from GitHub"
                 echo "Compiling the code and generating artifacts."
+                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/weeejull/SIT_223_6.2C/Jenkinsfile.git'
             }
         }
         // test starts
