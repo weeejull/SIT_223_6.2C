@@ -1,59 +1,91 @@
 pipeline {
     agent any
-    tools {
-        jdk 'jdk'
-        maven 'maven'
-    }
-    
     stages {
+        // make build
+        //maven is used
         stage('Build') {
             steps {
-                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/weeejull/SIT_223_6.2C.git'
-                echo "Fetching the source code from Github."
-                echo "Compiling the code using Maven and generating artifacts."
+                echo "Fetching the source code from GitHub"
+                echo "Compiling the code and generating artifacts."
             }
         }
+        // test starts
+        //Selenium is used
         stage('Unit and Integration Tests') {
             steps {
-                echo "Automated Unit Tests Run Successfully using Selenium."
-                echo "Automated Integration Tests Run Successfully using Selenium."
+                echo "Running unit tests: started"
+                echo "Running integration tests: started"
+            }
+            post {
+                success {
+                    mail to: 'vijul4860.be22@chitkara.edu.in',
+                        subject: 'UNIT AND INTEGRATION TEST SUCCESS',
+                        body: 'The unit and integration tests are successfull.'
+                }
+                failure {
+                    mail to: 'vijul4860.be22@chitkara.edu.in',
+                        subject: 'UNIT AND INTEGRATION TEST FAILED',
+                        body: 'The unit and integration tests are unsuccessfull.'
+                }
             }
         }
+        //SONARQUBE is used
         stage('Code Analysis') {
             steps {
-                echo "The code has been analyzed successfully."
+                echo "Running code analysis: started"
             }
         }
+
+        //OWASP is used
         stage('Security Scan') {
             steps {
-                echo "Security Scanning has been done on the code successfully."
+                echo "Running security scan: started"
+            }
+            post {
+                success {
+                    mail to: 'vasudha4859.be22@chitkara.edu.in',
+                        subject: 'Security Scan Success',
+                        body: 'The Security Scan has succeeded. Find attached logs for more information.'
+                }
+                failure {
+                    mail to: 'vasudha4859.be22@chitkara.edu.in',
+                        subject: 'Security Scan Failed',
+                        body: 'The Security Scan has failed. Find attached logs for more information.'
+                }
             }
         }
+        
+        //AWS is used
         stage('Deploy to Staging') {
             steps {
-                echo "Deploying to Staging done successfully."
+                echo "Deploying to Staging: started"
             }
         }
+        
+        //AWS is used
         stage('Integration Tests on Staging') {
             steps {
-                echo "Integration Tests have been run on Staging successfully."
+                echo "Running integration tests on Staging: started"
+            }
+            post {
+                success {
+                    mail to: 'vijul4860.be22@chitkara.edu.in',
+                        subject: 'Integration Tests on Staging Success',
+                        body: 'The Integration Tests on Staging are successful.'
+                }
+                failure {
+                    mail to: 'vijul4860.be22@chitkara.edu.in',
+                        subject: 'Integration Tests on Staging Failed',
+                        body: 'The Integration Tests on Staging have failed. Find attached logs for more information.'
+                }
             }
         }
+
+        //AWS is used
         stage('Deploy to Production') {
             steps {
-                echo "Deploying to production has been done successfully."
+                echo "Deploying to Production: started"
             }
-        }
-    }
-    
-    post {
-        success {
-            // Email notification for successful test and security scan stages
-            emailext attachLog: true, body: "Project Name: SIT_223_6.2C | Build Status: SUCCESS | Stage: Test and Security Scan have run successfully.", subject: "Build Status: SUCCESS!", to: "vijulkapoor@gmail.com"
-        }
-        failure {
-            // Email notification for failed test and security scan stages
-            emailext attachLog: true, body: "Project Name: SIT_223_6.2C | Build Status: FAILURE | Stage: Test and Security Scan have failed.", subject: "Build Status: FAILURE!", to: "vijulkapoor@gmail.com"
         }
     }
 }
